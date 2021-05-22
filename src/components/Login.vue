@@ -94,7 +94,7 @@ export default {
 }
 </script>
 
-<style  scoped>
+<style Lang="less" scoped>
 .login_container{
     background-color: #2b4b6b;
     height: 100%;
