@@ -3,22 +3,28 @@ import {
   Button,
   Form,
   FormItem,
-<<<<<<< HEAD
-  Input,
-  Message
-=======
   Message,
-  Input
->>>>>>> login
+  Input,
+  Container,
+  Header,
+  Aside,
+  Main,
+  Menu,
+  MenuItem,
+  Submenu
 } from 'element-ui'
 
 Vue.use(Button)
 Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(Input)
-<<<<<<< HEAD
+Vue.use(Container)
+Vue.use(Header)
+Vue.use(Aside)
+Vue.use(Main)
+Vue.use(Menu)
+Vue.use(MenuItem)
+Vue.use(Submenu)
+//  使用挂载，$message可以随便改
 
-=======
-//使用挂载，$message可以随便改
->>>>>>> login
 Vue.prototype.$message = Message;
