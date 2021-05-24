@@ -21,7 +21,9 @@ import {
   TableColumn,
   Switch,
   Tooltip,
-  Pagination
+  Pagination,
+  Dialog,
+  MessageBox
 } from 'element-ui'
 
 Vue.use(Button)
@@ -45,6 +47,8 @@ Vue.use(TableColumn)
 Vue.use(Switch)
 Vue.use(Tooltip)
 Vue.use(Pagination)
+Vue.use(Dialog)
 //  使用挂载，$message可以随便改
 
 Vue.prototype.$message = Message;
+Vue.prototype.$confirm = MessageBox.confirm;
