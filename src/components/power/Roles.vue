@@ -48,7 +48,7 @@
                     <template v-slot="scope">
                         <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditRolesDialog(scope.row.id)">编辑</el-button>
                         <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeRolesById(scope.row.id)">删除</el-button>
-                        <el-button type="warning" icon="el-icon-setting" size="mini">分配权限</el-button>
+                        <el-button type="warning" icon="el-icon-setting" size="mini" @click="showSetRightDialog(scope.row)">分配权限</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -86,6 +86,17 @@
                 <el-button type="primary" @click="editRolesInfo">确 定</el-button>
             </span>
         </el-dialog>
+
+        <!--分配权限对话框-->
+        <el-dialog title="分配权限" :visible.sync="setRightDialogVisible" width="50%"  @close="setRightDialogClosed">
+            <!--树形空间-->
+            <el-tree :data="rightslist" :props="treeProps" show-checkbox node-key="id" 
+            default-expand-all :default-checked-keys="defKeys" ref="treeRef"></el-tree>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="setRightDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="setRightsInfo">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -120,7 +131,20 @@ export default {
                     {required:true,message:'请输入角色描述',trigger:'blur'},
                     {min:3,max:10,message:'用户名长度在1~15个字符之间',trigger:'blur'}
                 ]
-            }
+            },
+            //分配权限
+            setRightDialogVisible:false,
+            rightslist:[],
+            //树形控件的属性绑定对象
+            treeProps:{
+                label:'authName',
+                children:'children'
+            },
+            //默认勾选的权限ID值数组
+            defKeys:[],
+            //当前修改的ID值
+            roleId:''
+
 
         }
     },
@@ -203,6 +227,48 @@ export default {
             this.$message.success('删除用户成功！');
             //刷新列表数据
             role.children = res.data;
+        },
+        //展示分配权限对话框
+        async showSetRightDialog(role){
+            this.roleId = role.id;
+            const {data:res} = await this.$http.get('rights/tree');
+            if(res.meta.status !== 200) return this.$message.error('查询权限信息失败！');
+            this.rightslist = res.data;
+
+            //递归获取三级权限
+            this.getLeafKeys(role, this.defKeys);
+
+            this.setRightDialogVisible = true;
+        },
+        //递归形式获取角色三级权限保存到数组
+        getLeafKeys(node,arr){
+            if(!node.children){
+                return arr.push(node.id);
+            }
+            node.children.forEach(element => {
+                this.getLeafKeys(element, arr);
+            });
+        },
+        //监听关闭修改权限对话框
+        setRightDialogClosed(){
+            this.defKeys = [];
+        },
+        //为角色分配权限
+        async setRightsInfo(){
+            const keys = [
+                ...this.$refs.treeRef.getCheckedKeys(),
+                ...this.$refs.treeRef.getHalfCheckedKeys()
+            ]  
+            //拼接
+            const idStr = keys.join(',');
+
+            const {data:res} = await this.$http.post(`roles/${this.roleId}/rights`,{rids:idStr});
+            if(res.meta.status !== 200) return this.$message.error('分配权限失败！');
+            this.$message.success('分配权限成功！');
+
+            this.getRolesList();
+            this.setRightDialogVisible = false;
+
         }
     }
 }
