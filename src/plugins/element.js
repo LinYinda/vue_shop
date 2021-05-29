@@ -31,7 +31,11 @@ import {
   Cascader,
   Alert,
   Tabs,
-  TabPane
+  TabPane,
+  Step,
+  Steps,
+  Checkbox,
+  CheckboxGroup
 } from 'element-ui'
 
 Vue.use(Button)
@@ -64,6 +68,10 @@ Vue.use(Cascader)
 Vue.use(Alert)
 Vue.use(Tabs)
 Vue.use(TabPane)
+Vue.use(Step)
+Vue.use(Steps)
+Vue.use(Checkbox)
+Vue.use(CheckboxGroup)
 //  使用挂载，$message可以随便改
 
 Vue.prototype.$message = Message;
