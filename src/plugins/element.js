@@ -35,7 +35,8 @@ import {
   Step,
   Steps,
   Checkbox,
-  CheckboxGroup
+  CheckboxGroup,
+  Upload
 } from 'element-ui'
 
 Vue.use(Button)
@@ -72,6 +73,7 @@ Vue.use(Step)
 Vue.use(Steps)
 Vue.use(Checkbox)
 Vue.use(CheckboxGroup)
+Vue.use(Upload)
 //  使用挂载，$message可以随便改
 
 Vue.prototype.$message = Message;
