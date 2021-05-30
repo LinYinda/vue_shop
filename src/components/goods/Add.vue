@@ -147,8 +147,12 @@
                     </el-tab-pane>
                     <el-tab-pane
                         label="商品内容"
-                        name="4"
-                    >商品内容</el-tab-pane>
+                        name="4">
+                        <!--富文本编辑器-->
+                        <quill-editor v-model="addForm.goods_introduce"></quill-editor>
+                        <!--添加商品-->
+                        <el-button type="primary" class="btnAdd" @click="add">添加商品</el-button>
+                    </el-tab-pane>
                 </el-tabs>
             </el-form>
         </el-card>
@@ -164,6 +168,8 @@
 </template>
 
 <script>
+import _ from 'lodash';
+
 export default {
   data() {
     return {
@@ -178,7 +184,10 @@ export default {
         //商品所属分类数组
         goods_cat: [],
         //图片数组
-        pics: []
+        pics: [],
+        //商品详情描述
+        goods_introduce:'',
+        attrs:[]
       },
       addFormRules: {
         goods_name: [
@@ -286,6 +295,30 @@ export default {
     handleSuccess(res) {
       const picInfo = { pic: res.data.tmp_path };
       this.addForm.pics.push(picInfo);
+    },
+    //提交添加商品
+     add(){
+      this.$refs.addFormRef.validate(async valid=>{
+        if(!valid) return this.$message.error('请填写必要的表单项！');
+        //改变提交数据形态,不可直接转成数组，级联选择器双向绑定会出错,需要深拷贝 lodash的cloneDeep(obj)
+        const form = _.cloneDeep(this.addForm);
+        form.goods_cat = form.goods_cat.join(',');
+        //处理动态参数和静态属性
+        this.manyTableData.forEach(item=>{
+          const newInfo = {attr_id:item.attr_id, attr_value:item.attr_vals.join(',')};
+          this.addForm.attrs.push(newInfo);
+        })
+        this.onlyTableData.forEach(item=>{
+          const newInfo = {attr_id:item.attr_id, attr_value:item.attr_vals};
+          this.addForm.attrs.push(newInfo);
+        })
+        form.attrs = this.addForm.attrs;
+
+        const {data:res} = await this.$http.post('goods', form);
+        if(res.meta.status !== 201 ) return this.$message.error('添加商品失败！');
+        this.$message.success('添加商品成功！');
+        this.$router.push('/goods');
+      })
     }
   }
 };
@@ -297,6 +330,9 @@ export default {
 }
 .preImg{
     width: 100%;
+}
+.btnAdd{
+  margin-top: 15px;
 }
 </style>
 
